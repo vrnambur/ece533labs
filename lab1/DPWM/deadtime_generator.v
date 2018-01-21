@@ -4,6 +4,7 @@ module deadtime_generator #(parameter RESOLUTION = 12)
 ,	input wire [RESOLUTION-1:0] ls_deadtime
 ,	input wire HPWM
 ,	input wire LPWM
+,	input wire reset
 
 ,	output wire pwm
 ,	output wire cpwm
@@ -17,20 +18,20 @@ wire deadtime_ls_mask = ls_dt_counter > ls_deadtime;
 
 positive_counter #( .WIDTH(RESOLUTION) ) HS_DT_CTR (
 	.clk(hf_clock),
-	.reset(~HPWM),
+	.reset(~HPWM | reset),
 	.enable(1'b1),
 	.count(hs_dt_counter)
 );
 
 positive_counter #( .WIDTH(RESOLUTION) ) LS_DT_CTR (
 	.clk(hf_clock),
-	.reset(~LPWM),
+	.reset(~LPWM | reset),
 	.enable(1'b1),
 	.count(ls_dt_counter)
 );
 
-assign pwm  = HPWM & deadtime_hs_mask;
-assign cpwm = LPWM & deadtime_ls_mask;
+assign pwm  = (HPWM & deadtime_hs_mask) & (~reset);
+assign cpwm = (LPWM & deadtime_ls_mask) & (~reset);
 
 endmodule
 

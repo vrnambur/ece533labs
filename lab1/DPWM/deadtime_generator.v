@@ -17,14 +17,14 @@ wire deadtime_ls_mask = ls_dt_counter > ls_deadtime;
 
 positive_counter #( .WIDTH(RESOLUTION) ) HS_DT_CTR (
 	.clk(hf_clock),
-	.reset(HPWM),
+	.reset(~HPWM),
 	.enable(1'b1),
 	.count(hs_dt_counter)
 );
 
 positive_counter #( .WIDTH(RESOLUTION) ) LS_DT_CTR (
 	.clk(hf_clock),
-	.reset(LPWM),
+	.reset(~LPWM),
 	.enable(1'b1),
 	.count(ls_dt_counter)
 );

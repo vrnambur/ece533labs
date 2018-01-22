@@ -34,7 +34,7 @@ pwm_generator #( .RESOLUTION(RESOLUTION) ) PWM_GEN (
 	.reset(reset),
 	
 	.HPWM(HPWM),
-	.LPWM(LPWM),
+	.LPWM(LPWM)
 );
 
 deadtime_generator #( .RESOLUTION(RESOLUTION) ) DT_GEN (

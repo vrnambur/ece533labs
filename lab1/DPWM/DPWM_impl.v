@@ -2,7 +2,7 @@
 
 module DPWM_impl #(parameter RESOLUTION = 12) 
 (   input wire [RESOLUTION-1:0] duty_cycle
-,   input wire [RESOLUTION-1:0] fs
+,   input wire [RESOLUTION-1:0] fs          // (2^(RESOLUTION) - fs) hf_clk periods per output PWM period 
 ,   input wire [RESOLUTION-1:0] deadtime1
 ,   input wire [RESOLUTION-1:0] deadtime2
 ,   input wire hf_clock
@@ -38,7 +38,7 @@ pwm_generator #( .RESOLUTION(RESOLUTION) ) PWM_GEN (
 );
 
 deadtime_generator #( .RESOLUTION(RESOLUTION) ) DT_GEN (
-	.hf_clock(hfclock),
+	.hf_clock(hf_clock),
 	.hs_deadtime(safe_dt1),
 	.ls_deadtime(safe_dt2),
 	.HPWM(HPWM),

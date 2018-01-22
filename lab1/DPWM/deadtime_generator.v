@@ -13,8 +13,8 @@ module deadtime_generator #(parameter RESOLUTION = 12)
 //WIRES
 wire [RESOLUTION-1:0] hs_dt_counter;
 wire [RESOLUTION-1:0] ls_dt_counter;
-wire deadtime_hs_mask = hs_dt_counter > hs_deadtime;
-wire deadtime_ls_mask = ls_dt_counter > ls_deadtime;
+wire deadtime_hs_mask = hs_dt_counter >= hs_deadtime;
+wire deadtime_ls_mask = ls_dt_counter >= ls_deadtime;
 
 positive_counter #( .WIDTH(RESOLUTION) ) HS_DT_CTR (
 	.clk(hf_clock),

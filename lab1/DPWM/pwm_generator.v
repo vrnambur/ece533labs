@@ -22,14 +22,14 @@ wire [RESOLUTION-1:0] sat_highD = (highD > fs) ? fs : highD;
 wire [RESOLUTION-1:0] sat_lowD  = (lowD > fs)  ? fs : lowD;
 
 // PWM Sawtooth Implementation
-negative_counter #( .WIDTH(RESOLUTION) ) HIGH_PWM (
+positive_counter #( .WIDTH(RESOLUTION) ) HIGH_PWM (
 	.clk(hf_clock),
 	.reset((fs == highside_count) | reset),
 	.enable(1'b1),
 	.count(highside_count)
 );
 
-negative_counter #( .WIDTH(RESOLUTION) ) LOW_PWM (
+positive_counter #( .WIDTH(RESOLUTION) ) LOW_PWM (
 	.clk(hf_clock),
 	.reset((fs == lowside_count) | reset),
 	.enable(1'b1),

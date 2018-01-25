@@ -1,36 +1,33 @@
-module sr_latch #(parameter WIDTH = 8)
-(   input wire [WIDTH-1:0] s
-,   input wire [WIDTH-1:0] r
+module sr_latch
+(   input wire s
+,   input wire r
 ,   input wire enable
 ,   input wire reset
 
-,   output reg [WIDTH-1:0] q
-,   output wire [WIDTH-1:0] qN
+,   output reg q
+,   output wire qN
 );
-
-wire [WIDTH-1:0] set_trigger;
-wire [WIDTH-1:0] reset_triggerN;
-
 
 assign qN = ~q;
 
-genvar I;
-generate
-for (I = 0; I < WIDTH; I=I+1) begin
+// Behavioural Description of an SR Latch
+always @(*) begin
 
-    assign set_trigger[I]      = s[I] & enable & ~reset;
-    assign reset_triggerN[I]    = ~((~s[I] & r[I]) | reset);
-
-    always @(posedge set_trigger[I] or negedge reset_triggerN[I]) begin
-        if (~reset_triggerN[I]) begin
-            q[I] = 1'b0;
-        end
-        else if (set_trigger[I]) begin
-            q[I] = 1'b1;
+    if (reset) begin
+        q <= 0;
+    end
+    else begin
+        if (enable) begin
+            if (s) begin
+                q <= 1;
+            end
+            else if (r) begin
+                q <= 0;
+            end
         end
     end
+    
 end
-endgenerate
 
 endmodule
 

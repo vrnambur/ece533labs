@@ -39,7 +39,7 @@ module tb(
     initial begin 
         clock = 0;
         DC = 0;
-        FS = 0;
+        FS = 1024;
         DT1 = 10; // adding 1 cycle extra here
         DT2 = 20; // adding 2 cycles extra here
         reset = 1;
@@ -50,20 +50,20 @@ module tb(
         //#400000 DC = 3072;
     end
     
-    always #41000 DC = DC + 170;
+    always #400 DC = DC + 100;
     always #5 clock = !clock;
     
     DPWM_impl #(12) DUT (
-    .duty_cycle(DC),
-    .fs(FS),
-    .deadtime1(DT1),
-    .deadtime2(DT2),
-    .hf_clock(clock),
-    .reset(reset),
-    .enable(enable),
+        .duty_cycle(DC),
+        .fs(FS),
+        .deadtime1(DT1),
+        .deadtime2(DT2),
+        .hf_clock(clock),
+        .reset(reset),
+        .enable(enable),
     
-    .c1(c1),
-    .c2(c2)
+        .c1(c1),
+        .c2(c2)
     );
     
 endmodule

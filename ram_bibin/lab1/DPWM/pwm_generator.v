@@ -7,6 +7,7 @@ module pwm_generator #(parameter RESOLUTION = 12) (
 
 ,	output wire HPWM
 ,	output wire LPWM
+,   output wire pwm_clk
 );
 
 // WIRES
@@ -39,8 +40,9 @@ positive_counter #( .WIDTH(RESOLUTION) ) LOW_PWM (
 );
 
 // PWM Generation Based on Sawtooth
-assign HPWM = (sat_highD > highside_count) & (~reset);
-assign LPWM = (sat_lowD  <= lowside_count)  & (~reset);
+assign HPWM    = (sat_highD > highside_count) & (~reset);
+assign LPWM    = (sat_lowD  <= lowside_count) & (~reset);
+assign pwm_clk = ((fs >> 1) > highside_count) & (~reset);
 
 
 endmodule

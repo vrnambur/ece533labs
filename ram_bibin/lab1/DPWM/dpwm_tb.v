@@ -39,9 +39,9 @@ module tb(
     initial begin 
         clock = 0;
         DC = 0;
-        FS = 1024;
-        DT1 = 10; // adding 1 cycle extra here
-        DT2 = 20; // adding 2 cycles extra here
+        FS = 4095;
+        DT1 = 0; // adding 1 cycle extra here
+        DT2 = 0; // adding 2 cycles extra here
         reset = 1;
         enable = 0;
         

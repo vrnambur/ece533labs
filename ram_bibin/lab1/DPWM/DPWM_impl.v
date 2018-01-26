@@ -11,35 +11,54 @@ module DPWM_impl #(parameter RESOLUTION = 12)
 
 ,   output wire c1
 ,   output wire c2
+,	 output wire pwm_clk
 );
 
 // REGISTERS
 reg [RESOLUTION-1:0] clocked_dc;
-reg [RESOLUTION-1:0] clocked_fs;
+
 reg [RESOLUTION-1:0] clocked_dt1;
 reg [RESOLUTION-1:0] clocked_dt2;
 
 //WIRES
 wire HPWM;
 wire LPWM;
-wire pwm_clk;
+//wire pwm_clk;
 
 wire pwm;
 wire cpwm;
 
-wire [RESOLUTION-1:0] safe_dt1;
-wire [RESOLUTION-1:0] safe_dt2;
+wire [RESOLUTION-1:0] san_dc;
+wire [RESOLUTION-1:0] san_fs;
+wire [RESOLUTION-1:0] san_dt1;
+wire [RESOLUTION-1:0] san_dt2;
+
+wire [RESOLUTION-1:0] clocked_fs;
+
+//wire [RESOLUTION-1:0] safe_dt1;
+//wire [RESOLUTION-1:0] safe_dt2;
 
 // MAIN CODE
 always @(posedge pwm_clk) begin
-    clocked_dc  <= duty_cycle;
-    clocked_fs  <= fs;
-    clocked_dt1 <= deadtime1;
-    clocked_dt2 <= deadtime2;
+    clocked_dc  <= san_dc;
+    clocked_dt1 <= san_dt1;
+    clocked_dt2 <= san_dt2;
 end
 
-assign safe_dt1 = (clocked_dt1 < clocked_dc) ? clocked_dt1 : clocked_dc;
-assign safe_dt2 = (clocked_dt2 < clocked_dc) ? clocked_dt2 : clocked_dc;
+input_sanitizer #( .RESOLUTION(RESOLUTION) ) CHECK_INPUTS (
+	.dc(duty_cycle),
+	.fs(fs),
+	.dt1(deadtime1),
+	.dt2(deadtime2),
+	
+	.san_dc(san_dc),
+	.san_fs(clocked_fs),
+	.san_dt1(san_dt1),
+	.san_dt2(san_dt2)
+);
+
+//assign safe_dt1 = (clocked_dt1 < clocked_dc) ? clocked_dt1 : clocked_dc;
+//assign safe_dt2 = (clocked_dt2 < clocked_dc) ? clocked_dt2 : clocked_dc;
 
 pwm_generator #( .RESOLUTION(RESOLUTION) ) PWM_GEN (
 	.hf_clock(hf_clock),
@@ -55,8 +74,8 @@ pwm_generator #( .RESOLUTION(RESOLUTION) ) PWM_GEN (
 
 deadtime_generator #( .RESOLUTION(RESOLUTION) ) DT_GEN (
 	.hf_clock(hf_clock),
-	.hs_deadtime(safe_dt1),
-	.ls_deadtime(safe_dt2),
+	.hs_deadtime(clocked_dt1),
+	.ls_deadtime(clocked_dt2),
 	.HPWM(HPWM),
 	.LPWM(LPWM),
 	.reset(reset),

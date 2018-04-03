@@ -38,10 +38,10 @@ module tb(
     
     initial begin 
         clock = 0;
-        DC = 0;
-        FS = 4095;
-        DT1 = 0; // adding 1 cycle extra here
-        DT2 = 0; // adding 2 cycles extra here
+        DC = 500;
+        FS = 3095;
+        DT1 = 1;
+        DT2 = 2;
         reset = 1;
         enable = 0;
         
@@ -50,7 +50,7 @@ module tb(
         //#400000 DC = 3072;
     end
     
-    always #400 DC = DC + 100;
+    //always #400 DC = DC + 100;
     always #5 clock = !clock;
     
     DPWM_impl #(12) DUT (

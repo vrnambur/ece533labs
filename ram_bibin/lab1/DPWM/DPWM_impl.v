@@ -11,7 +11,7 @@ module DPWM_impl #(parameter RESOLUTION = 12)
 
 ,   output wire c1
 ,   output wire c2
-,	 output wire pwm_clk
+,	output wire pwm_clk
 );
 
 // REGISTERS
@@ -35,9 +35,6 @@ wire [RESOLUTION-1:0] san_dt2;
 
 wire [RESOLUTION-1:0] clocked_fs;
 
-//wire [RESOLUTION-1:0] safe_dt1;
-//wire [RESOLUTION-1:0] safe_dt2;
-
 // MAIN CODE
 always @(posedge pwm_clk) begin
     clocked_dc  <= san_dc;
@@ -57,23 +54,31 @@ input_sanitizer #( .RESOLUTION(RESOLUTION) ) CHECK_INPUTS (
 	.san_dt2(san_dt2)
 );
 
-//assign safe_dt1 = (clocked_dt1 < clocked_dc) ? clocked_dt1 : clocked_dc;
-//assign safe_dt2 = (clocked_dt2 < clocked_dc) ? clocked_dt2 : clocked_dc;
+// DPWM Counter
+wire [RESOLUTION-1:0] counter_state;
+wire counter_threshold;
+positive_counter #( .WIDTH(RESOLUTION) ) DPWM_COUNTER (
+	.clk(hf_clock),
+	.reset(counter_threshold),
+	.enable(1'b1),
+	.count(counter_state)
+);
 
 pwm_generator #( .RESOLUTION(RESOLUTION) ) PWM_GEN (
-	.hf_clock(hf_clock),
+	.counter_state(counter_state),
 	.highD(clocked_dc),
-	.lowD(clocked_dc),
 	.frequency_select(clocked_fs),
 	.reset(reset),
 	
+	.counter_threshold(counter_threshold),
 	.HPWM(HPWM),
 	.LPWM(LPWM),
 	.pwm_clk(pwm_clk)
 );
 
 deadtime_generator #( .RESOLUTION(RESOLUTION) ) DT_GEN (
-	.hf_clock(hf_clock),
+	.counter_state(counter_state),
+	.duty_cycle(clocked_dc),
 	.hs_deadtime(clocked_dt1),
 	.ls_deadtime(clocked_dt2),
 	.HPWM(HPWM),
